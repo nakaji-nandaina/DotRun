@@ -160,7 +160,7 @@ public class GameManager : MonoBehaviour
         GameObject newBg = Instantiate(backgroundPrefab, newPos, Quaternion.identity);
         newBg.transform.SetParent(parentGrid.transform);
         backgrounds.Add(newBg);
-        Debug.Log("BGAdd");
+        //Debug.Log("BGAdd");
     }
     public void OnPlayerDamage()
     {
