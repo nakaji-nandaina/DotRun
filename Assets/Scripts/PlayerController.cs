@@ -82,10 +82,7 @@ public class PlayerControll : MonoBehaviour
 
     private void setCurrentLane(int id)
     {
-        for(int i = 0; i < 4; i++)
-        {
-            isPlayerInLane[i] = false;
-        }
+        for(int i = 0; i < 4; i++)isPlayerInLane[i] = false;
         isPlayerInLane[id] = true;
         this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x,playerPoints[id],this.gameObject.transform.position.z);
         currentLane = id;
