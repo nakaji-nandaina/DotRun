@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class PlayerControll : MonoBehaviour
 {
-
+    [SerializeField]
+    private GameObject ShotPoint;
     private List<float> playerPoints;
     private  List<bool> isPlayerInLane;
     private int currentLane;
     private int nextLane;
-
+    private List<Shot> shots;
+    [SerializeField]
+    private Shot DefShot;
     private float moveSpeed;
-    // Start is called before the first frame update
 
     public enum PlayerState
     {
@@ -22,6 +24,8 @@ public class PlayerControll : MonoBehaviour
 
     void Start()
     {
+        shots = new List<Shot>();
+        shots.Add(DefShot);
         initLanePos();
         setCurrentLane(0);
         currentLane = 0;
@@ -34,7 +38,22 @@ public class PlayerControll : MonoBehaviour
     {
         onClickMoveButton();
         MoveLane();
+        Shots();
     }
+    private void Shots()
+    {
+        foreach(Shot shot in shots)
+        {
+            shot.shotTimer += Time.deltaTime;
+            if (shot.shotTimer >= shot.shotInterval)
+            {
+                shot.shotTimer = 0;
+                GameObject bullet= Instantiate(shot.shotPrefab, ShotPoint.transform.position, Quaternion.identity);
+                bullet.GetComponent<Bullet>().InitBullet(shot.shotSpeed, shot.shotDamage,isPlayerInLane);
+            }
+        }
+    }
+
     public void ChangePS(PlayerState nextstate)
     {
         switch (nextstate)
