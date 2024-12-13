@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dbda56523c73224fb640d2d923e9f2c, type: 3}
   m_Name: Pencil
   m_EditorClassIdentifier: 
-  shotSpeed: 8
+  shotSpeed: 15
   shotInterval: 1
-  shotTimer: 0.0468553
-  shotDamage: 10
+  shotTimer: 0.062118072
+  shotDamage: 50
   shotPrefab: {fileID: 10939713477246686, guid: 2abf6f5a1d2abad4fa5848a14e15e4c3, type: 3}

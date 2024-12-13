@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Security;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 public class GameManager : MonoBehaviour
@@ -7,17 +9,25 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Scrolling Settings")]
-    public float originalScrollSpeed = 5f;          // 通常のスクロール速度
+    public float originalScrollSpeed = 6f;          // 通常のスクロール速度
     [HideInInspector]
     public float scrollSpeed { get; private set; }      // 現在のスクロール速度
     [SerializeField]
-    private float damageScrollSpeed = 2f;
-    public float speedChangeDuration = 2f;  // 元の速度に戻るまでの時間
+    private float damageScrollSpeed = 1f;
+    public float speedChangeDuration = 3f;  // 元の速度に戻るまでの時間
 
 
     [Header("Background Settings")]
     public GameObject stagegroundPrefab;     // 背景のプレハブ
     public GameObject backgroundPrefab;
+
+    [Header("Enemys")]
+    public List<GameObject> enemyPrefabs;
+
+    private float spawnIntervalMax = 3f;
+    private float spawnIntervalMin = 0.5f;
+    private float spawnCounter = 0;
+
     [HideInInspector]
     public float stagegroundWidth { get; private set; } // ステージの幅
     [HideInInspector]
@@ -47,8 +57,8 @@ public class GameManager : MonoBehaviour
     {
         //背景サイズの計算
         CalculateGroundsWidth();
-        scrollSpeed = originalScrollSpeed;
-
+        scrollSpeed = damageScrollSpeed;
+        BGMManager.Instance.PlayBGM("Stage1");
         // 最初の背景を配置
         SpawnInitialGrounds();
     }
@@ -60,8 +70,23 @@ public class GameManager : MonoBehaviour
         Scrollgrounds();
         //スクロールスピードの上昇
         UpScrollSpeed();
-
+        //敵の生成
+        SpawnEnemy();
     }
+    private void SpawnEnemy()
+    {
+
+        spawnCounter -= Time.deltaTime;
+        if (spawnCounter > 0)return;
+        spawnCounter = Random.Range(spawnIntervalMin, spawnIntervalMax);
+        //ランダムで敵を生成
+        int enemyIndex = Random.Range(0, enemyPrefabs.Count);
+        int spawnLane = Random.Range(0, 4);
+        GameObject enemy = Instantiate(enemyPrefabs[enemyIndex],new Vector2(12,-spawnLane- enemyPrefabs[enemyIndex].GetComponent<EnemyController>().heightBuff), Quaternion.identity);
+        enemy.GetComponent<SpriteRenderer>().sortingOrder = spawnLane;
+        enemy.GetComponent<EnemyController>().InitEnemy(spawnLane);
+    }
+
     private void CalculateGroundsWidth()
     {
         //StageGroundの設定
@@ -143,20 +168,20 @@ public class GameManager : MonoBehaviour
     {
         // スクロール速度を徐々に元に戻す
         if (scrollSpeed >= originalScrollSpeed) return;
-        scrollSpeed += (originalScrollSpeed / speedChangeDuration) * Time.deltaTime;
+        scrollSpeed += ((originalScrollSpeed-damageScrollSpeed)/ speedChangeDuration) * Time.deltaTime;
         if (scrollSpeed > originalScrollSpeed) scrollSpeed = originalScrollSpeed;
     }
 
     private void SpawnStageground()
     {
-        Vector3 newPos = new Vector3(2* stagegroundWidth, 0, 0);
+        Vector3 newPos = new Vector3(stagegrounds[stagegrounds.Count - 1].transform.position.x + stagegroundWidth, 0, 0);
         GameObject newBg = Instantiate(stagegroundPrefab, newPos, Quaternion.identity);
         newBg.transform.SetParent(parentGrid.transform);
         stagegrounds.Add(newBg);
     }
     private void SpawnBackground()
     {
-        Vector3 newPos = new Vector3(2.8f * stagegroundWidth, 0, 0);
+        Vector3 newPos = new Vector3(backgrounds[backgrounds.Count-1].transform.position.x+ backgroundWidth, 0, 0);
         GameObject newBg = Instantiate(backgroundPrefab, newPos, Quaternion.identity);
         newBg.transform.SetParent(parentGrid.transform);
         backgrounds.Add(newBg);

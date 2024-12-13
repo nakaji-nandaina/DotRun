@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControll : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private GameObject ShotPoint;
     private List<float> playerPoints;
-    private  List<bool> isPlayerInLane;
+    public  List<bool> isPlayerInLane{get;private set; }=new List<bool>();
     private int currentLane;
     private int nextLane;
     private List<Shot> shots;
@@ -15,6 +15,8 @@ public class PlayerControll : MonoBehaviour
     private Shot DefShot;
     private float moveSpeed;
 
+    private float invincibilityTime=1f;
+    private float invincibilityCounter = 0;
     public enum PlayerState
     {
         Run,
@@ -24,8 +26,9 @@ public class PlayerControll : MonoBehaviour
 
     void Start()
     {
+        
         shots = new List<Shot>();
-        shots.Add(DefShot);
+        AddShot(DefShot);
         initLanePos();
         setCurrentLane(0);
         currentLane = 0;
@@ -39,17 +42,28 @@ public class PlayerControll : MonoBehaviour
         onClickMoveButton();
         MoveLane();
         Shots();
+        invincibilityCounter -= Time.deltaTime;
+        invincibilityCounter = Mathf.Max(0, invincibilityCounter);
     }
+
+    public void AddShot(Shot shot)
+    {
+        if(shots.Contains(shot)) return;
+        if (shots.Count >= 6) return;
+        shot.shotTimer =0;
+        shots.Add(shot);
+    }
+
     private void Shots()
     {
         foreach(Shot shot in shots)
         {
-            shot.shotTimer += Time.deltaTime;
-            if (shot.shotTimer >= shot.shotInterval)
+            shot.shotTimer -= Time.deltaTime;
+            if (shot.shotTimer <= 0)
             {
-                shot.shotTimer = 0;
+                shot.shotTimer = shot.shotInterval;
                 GameObject bullet= Instantiate(shot.shotPrefab, ShotPoint.transform.position, Quaternion.identity);
-                bullet.GetComponent<Bullet>().InitBullet(shot.shotSpeed, shot.shotDamage,isPlayerInLane);
+                bullet.GetComponent<BulletController>().InitBullet(shot.shotSpeed, shot.shotDamage,isPlayerInLane);
             }
         }
     }
@@ -69,15 +83,11 @@ public class PlayerControll : MonoBehaviour
     private void initLanePos()
     {
         playerPoints = new List<float>();
-        for(int i = 0; i < 4; i++)
-        {
-            playerPoints.Add(-(i + 0.2f));
-        }
+        for(int i = 0; i < 4; i++)playerPoints.Add(-(i + 0.2f));
+        
         isPlayerInLane = new List<bool>();
-        for(int i = 0; i < 4; i++)
-        {
-            isPlayerInLane.Add(false);
-        }
+        for(int i = 0; i < 4; i++)isPlayerInLane.Add(false);
+        
     }
 
     private void setCurrentLane(int id)
@@ -117,5 +127,11 @@ public class PlayerControll : MonoBehaviour
         if (currentLane < nextLane)this.gameObject.transform.Translate(Vector3.down * Time.deltaTime*moveSpeed);
         else this.gameObject.transform.Translate(Vector3.up * Time.deltaTime*moveSpeed);
 
+    }
+    public void TakeDamage(int at)
+    {
+        if(invincibilityCounter > 0) return;
+        invincibilityCounter = invincibilityTime;
+        GameManager.Instance.OnPlayerDamage();
     }
 }
