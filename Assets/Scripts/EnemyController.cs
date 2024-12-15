@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -18,6 +17,8 @@ public class EnemyController : MonoBehaviour
     private float attackInterval = 0.1f;
     private float attackCounter = 0;
     public float heightBuff = 0.2f;
+
+    private float BaseY, JumpY;
     public bool IsDead { get; private set; }
 
     [SerializeField]
@@ -57,6 +58,7 @@ public class EnemyController : MonoBehaviour
             if (i == raneId) isEnemyInLane.Add(true);
             else isEnemyInLane.Add(false);
         }
+        GetComponent<SpriteRenderer>().sortingOrder = raneId;
     }
 
     public void TakeDamage(int at)
@@ -79,6 +81,9 @@ public class EnemyController : MonoBehaviour
         if (attackCounter > 0) return;
         bool isAt = false;
         for (int i = 0; i < 4; i++) if (player.isPlayerInLane[i] && isEnemyInLane[i])isAt = true;
+        if (player.JumpY > GetComponent<BoxCollider2D>().offset.y+GetComponent<BoxCollider2D>().size.y/2) isAt = false;
+        Debug.Log("Jump"+player.JumpY.ToString());
+        Debug.Log("Enemy"+(GetComponent<BoxCollider2D>().offset.y + GetComponent<BoxCollider2D>().size.y / 2).ToString() );
         if (!isAt) return;
         player.TakeDamage(At);
     }

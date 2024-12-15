@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotSpeed: 15
   shotInterval: 1
-  shotTimer: 0.062118072
+  shotTimer: 0.28336552
   shotDamage: 50
   shotPrefab: {fileID: 10939713477246686, guid: 2abf6f5a1d2abad4fa5848a14e15e4c3, type: 3}

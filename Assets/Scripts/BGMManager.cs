@@ -27,6 +27,8 @@ public class BGMManager : MonoBehaviour
         // シングルトンの設定
         if (Instance == null)
         {
+            if (gameObject.GetComponent<AudioSource>()) audioSource = gameObject.AddComponent<AudioSource>();
+            else audioSource = gameObject.GetComponent<AudioSource>();
             Instance = this;
             DontDestroyOnLoad(gameObject); // シーンを跨いでも保持
         }
@@ -44,10 +46,7 @@ public class BGMManager : MonoBehaviour
             }
         }
     }
-    private void Start()
-    {
-        if(gameObject.GetComponent<AudioSource>()) audioSource = gameObject.AddComponent<AudioSource>();
-    }
+    
     
     public void PlayBGM(string key, float fadeDuration = 1.0f)
     {

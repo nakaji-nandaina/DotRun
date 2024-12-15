@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Security;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
@@ -20,6 +21,10 @@ public class GameManager : MonoBehaviour
     [Header("Background Settings")]
     public GameObject stagegroundPrefab;     // 背景のプレハブ
     public GameObject backgroundPrefab;
+
+    [Header("UI")]
+    public Slider HPSlider;
+
 
     [Header("Enemys")]
     public List<GameObject> enemyPrefabs;
@@ -38,13 +43,15 @@ public class GameManager : MonoBehaviour
     private List<GameObject> stagegrounds = new List<GameObject>();
     private List<GameObject> backgrounds = new List<GameObject>();
 
-
+    [HideInInspector]
+    public PlayerController player;
     private void Awake()
     {
         // シングルトンの設定
         if (Instance == null)
         {
             Instance = this;
+            player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -190,6 +197,7 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDamage()
     {
         scrollSpeed = damageScrollSpeed;
+        HPSlider.value = player.HP;
     }
 }
     

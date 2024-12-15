@@ -23,6 +23,8 @@ public class SEManager : MonoBehaviour
         // シングルトンの設定
         if (Instance == null)
         {
+            if (gameObject.GetComponent<AudioSource>()) audioSource = gameObject.AddComponent<AudioSource>();
+            else audioSource = gameObject.GetComponent<AudioSource>();
             Instance = this;
             DontDestroyOnLoad(gameObject); // シーンを跨いでも保持
         }
@@ -40,10 +42,7 @@ public class SEManager : MonoBehaviour
             }
         }
     }
-    private void Start()
-    {
-        if (gameObject.GetComponent<AudioSource>()) audioSource = gameObject.AddComponent<AudioSource>();
-    }
+ 
 
     /// <summary>
     /// 指定したキーの効果音を再生

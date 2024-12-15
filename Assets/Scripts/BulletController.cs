@@ -19,7 +19,7 @@ public class BulletController : MonoBehaviour
     {
         speed = sp;
         damage = dm;
-        currentLane = lane;
+        currentLane = new List<bool>(lane);
         int order = 0;
         for (int i=0;i<4;i++)
         {
@@ -41,6 +41,10 @@ public class BulletController : MonoBehaviour
 
     private void AttackEnemy(EnemyController enemy)
     {
+        bool isAt = false;
+        string enes="E:", bulles = " B:";
+        for (int i = 0; i < 4; i++)if (enemy.isEnemyInLane[i] && currentLane[i]) isAt = true;
+        if (!isAt) return;
         enemy.TakeDamage(damage);
         SEManager.Instance.PlaySE(hitSE);
         isBreak = true;
