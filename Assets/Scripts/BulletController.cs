@@ -15,6 +15,7 @@ public class BulletController : MonoBehaviour
     private string shotSE="Shot";
     [SerializeField]
     private string hitSE = "Damaged";
+    public float BaseY { get; private set; }
     public void InitBullet(float sp,int dm,List<bool> lane)
     {
         speed = sp;
@@ -28,6 +29,7 @@ public class BulletController : MonoBehaviour
         SEManager.Instance.PlaySE(shotSE);
         this.GetComponent<SpriteRenderer>().sortingLayerName = "Lane";
         this.GetComponent<SpriteRenderer>().sortingOrder = order;
+        BaseY=GameManager.Instance.player.BaseY;
     }
 
     // Update is called once per frame
@@ -42,7 +44,6 @@ public class BulletController : MonoBehaviour
     private void AttackEnemy(EnemyController enemy)
     {
         bool isAt = false;
-        string enes="E:", bulles = " B:";
         for (int i = 0; i < 4; i++)if (enemy.isEnemyInLane[i] && currentLane[i]) isAt = true;
         if (!isAt) return;
         enemy.TakeDamage(damage);

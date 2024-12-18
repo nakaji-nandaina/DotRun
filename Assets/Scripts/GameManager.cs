@@ -24,7 +24,8 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public Slider HPSlider;
-
+    public Canvas WorldCanvas;
+    public GameObject DamageUI;
 
     [Header("Enemys")]
     public List<GameObject> enemyPrefabs;
@@ -47,7 +48,6 @@ public class GameManager : MonoBehaviour
     public PlayerController player;
     private void Awake()
     {
-        // ƒVƒ“ƒOƒ‹ƒgƒ“‚Ìİ’è
         if (Instance == null)
         {
             Instance = this;
@@ -198,6 +198,14 @@ public class GameManager : MonoBehaviour
     {
         scrollSpeed = damageScrollSpeed;
         HPSlider.value = player.HP;
+    }
+    public void PlayDamageUI(int damage)
+    {
+        GameObject damageUI = Instantiate(DamageUI);
+        damageUI.transform.SetParent(WorldCanvas.transform);
+        damageUI.GetComponent<UpUI>().InitPos(new Vector2(player.transform.position.x,player.transform.position.y+0.4f));
+        damageUI.GetComponent<Text>().text = damage.ToString();
+        Destroy(damageUI, 0.5f);
     }
 }
     

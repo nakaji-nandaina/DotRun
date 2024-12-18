@@ -195,6 +195,7 @@ public class PlayerController : MonoBehaviour
     {
         if(invincibilityCounter > 0) return;
         invincibilityCounter = invincibilityTime;
+        GameManager.Instance.PlayDamageUI(at);
         HP -= at;
         HP = Mathf.Max(0, HP);
         GameManager.Instance.OnPlayerDamage();

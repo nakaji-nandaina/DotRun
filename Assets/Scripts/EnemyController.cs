@@ -58,6 +58,7 @@ public class EnemyController : MonoBehaviour
             if (i == raneId) isEnemyInLane.Add(true);
             else isEnemyInLane.Add(false);
         }
+        BaseY = this.gameObject.transform.position.y;
         GetComponent<SpriteRenderer>().sortingOrder = raneId;
     }
 
