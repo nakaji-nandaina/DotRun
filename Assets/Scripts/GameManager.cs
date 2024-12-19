@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public float scrollSpeed { get; private set; }      // 現在のスクロール速度
     [SerializeField]
     private float damageScrollSpeed = 1f;
-    public float speedChangeDuration = 3f;  // 元の速度に戻るまでの時間
+    public float speedChangeDuration = 4f;  // 元の速度に戻るまでの時間
 
 
     [Header("Background Settings")]
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public Slider HPSlider;
     public Canvas WorldCanvas;
     public GameObject DamageUI;
+    public Text ScoreText;
 
     [Header("Enemys")]
     public List<GameObject> enemyPrefabs;
@@ -46,6 +47,9 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector]
     public PlayerController player;
+
+    public float Score { get; private set; }
+
     private void Awake()
     {
         if (Instance == null)
@@ -79,6 +83,8 @@ public class GameManager : MonoBehaviour
         UpScrollSpeed();
         //敵の生成
         SpawnEnemy();
+        Score += Time.deltaTime * scrollSpeed;
+        ScoreText.text = ((int)Score).ToString()+"m";
     }
     private void SpawnEnemy()
     {

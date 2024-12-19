@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
         moveSpeed = 5f;
         JumpY = 0;
         JumpHeight = 1.5f;
-        Gravity = -9.8f;
+        Gravity = -12f;
         IsJump = false;
 
         //Status

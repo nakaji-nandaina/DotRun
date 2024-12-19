@@ -11,14 +11,30 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private int At=10;
 
-    private float damageInterval = 0.1f;
-    private float damageConter = 0;
+    private float damageInterval = 0.5f;
+    private float damageCounter = 0;
+
+    private float InvincibleTime = 0.1f;
+    private float InvincibleCounter = 0f;
+
+    [SerializeField]
+    private float knockBackTime = 0.5f;
+    private float knockBackCounter = 0f;
+    private float knockBackFource=10f;
+    private float knockBackHeight = 0.8f;
+    [SerializeField]
+    private float DeadTime = 1.2f;
+    private float DeadCounter = 0f;
+
+    private float blinkCounter = 0;
+    private float blinkFre = 0.12f;
+
     [SerializeField]
     private float attackInterval = 0.1f;
     private float attackCounter = 0;
     public float heightBuff = 0.2f;
-
-    private float BaseY, JumpY;
+    
+    private float BaseY, JumpY,KnockY;
     public bool IsDead { get; private set; }
 
     [SerializeField]
@@ -33,21 +49,47 @@ public class EnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        damageInterval = 0.1f;
-        damageConter = 0;
+        InvincibleCounter = 0;
         destroyCounter = destroyTime;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (IsDead)
+        {
+            DeadCounter -= Time.deltaTime;
+            DeadCounter = Mathf.Max(0, DeadCounter);
+            blinkCounter += Time.deltaTime;
+            GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, Mathf.Sin(blinkCounter * Mathf.PI / blinkFre)*0.7f+0.3f);
+            KnockY =Mathf.Sin(Mathf.PI * DeadCounter / DeadTime) * knockBackHeight*1.2f;
+            if (DeadCounter > 0) this.gameObject.transform.position = new Vector2(this.gameObject.transform.position.x - (GameManager.Instance.scrollSpeed - knockBackFource*1.2f) * Time.deltaTime, BaseY + KnockY);
+            else Destroy(gameObject);
+            return;
+        }
         destroyCounter -= Time.deltaTime;
         if (destroyCounter <= 0) Destroy(this.gameObject);
-        damageConter -= Time.deltaTime;
-        damageConter = Mathf.Max(0, damageConter);
+        damageCounter -= Time.deltaTime;
+        damageCounter = Mathf.Max(0, damageCounter);
         attackCounter -= Time.deltaTime;
         attackCounter = Mathf.Max(0, attackCounter);
-        this.gameObject.transform.Translate(Vector2.left* (GameManager.Instance.scrollSpeed +runSpeed)*Time.deltaTime);
+        InvincibleCounter -= Time.deltaTime;
+        InvincibleCounter = Mathf.Max(0, InvincibleCounter);
+        knockBackCounter -= Time.deltaTime;
+        knockBackCounter = Mathf.Max(0, knockBackCounter);
+        KnockY = Mathf.Sin(Mathf.PI * knockBackCounter/knockBackTime)*knockBackHeight;
+        if (knockBackCounter > 0) this.gameObject.transform.position = new Vector2(this.gameObject.transform.position.x - (GameManager.Instance.scrollSpeed - knockBackFource) * Time.deltaTime, BaseY + KnockY);
+        else this.gameObject.transform.position = new Vector2(this.gameObject.transform.position.x - (GameManager.Instance.scrollSpeed + runSpeed) * Time.deltaTime, BaseY);
+        if (damageCounter > 0)
+        {
+            blinkCounter += Time.deltaTime;
+            GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, Mathf.Sin(blinkCounter * Mathf.PI / blinkFre)*0.7f+0.3f);
+        }
+        else
+        {
+            blinkCounter = 0;
+            GetComponent<SpriteRenderer>().color = new Color(1, 1, 1,1);
+        }
     }
 
     public void InitEnemy(int raneId)
@@ -65,20 +107,24 @@ public class EnemyController : MonoBehaviour
     public void TakeDamage(int at)
     {
         if (IsDead) return;
-        if (damageConter > 0) return;
-        damageConter = damageInterval;
+        if (InvincibleCounter > 0) return;
+        knockBackCounter = knockBackTime;
+        damageCounter = damageInterval;
+        InvincibleCounter = InvincibleTime;
         Hp -= at;
         if (Hp <= 0) Dead();
 
     }
     void Dead()
     {
+        if (IsDead) return;
         IsDead = true;
-        Destroy(this.gameObject);
+        DeadCounter = DeadTime;
     }
 
     private void DamagePlayer(PlayerController player)
     {
+        if (IsDead) return;
         if (attackCounter > 0) return;
         bool isAt = false;
         for (int i = 0; i < 4; i++) if (player.isPlayerInLane[i] && isEnemyInLane[i])isAt = true;
