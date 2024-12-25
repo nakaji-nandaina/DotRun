@@ -728,6 +728,7 @@ MonoBehaviour:
   ScoreText: {fileID: 735015449}
   enemyPrefabs:
   - {fileID: 2727675040277854058, guid: 47d0a4868ea76914997d1711af878afc, type: 3}
+  - {fileID: 2727675040277854058, guid: 4ae5c3dded0ebb6409aac703480b1f43, type: 3}
   Grid: {fileID: 6105289557888819198, guid: 3d010539129729e448d861a4bb75f1cb, type: 3}
   player: {fileID: 0}
 --- !u!4 &826297102

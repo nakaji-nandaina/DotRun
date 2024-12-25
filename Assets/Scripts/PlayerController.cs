@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 
 
     public  List<bool> isPlayerInLane{get;private set; }=new List<bool>();
-    private int currentLane;
+    public int currentLane { get; private set; }
     private int nextLane;
     private List<Shot> shots;
     [SerializeField]

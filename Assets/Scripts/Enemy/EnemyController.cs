@@ -34,27 +34,31 @@ public class EnemyController : MonoBehaviour
     private float attackCounter = 0;
     public float heightBuff = 0.2f;
     
-    private float BaseY, JumpY,KnockY;
+    protected float BaseY, JumpY,KnockY;
+
+    protected int currentLane;
     public bool IsDead { get; private set; }
 
     [SerializeField]
     private float runSpeed=2f;
     [HideInInspector]
-    public List<bool> isEnemyInLane { get; private set; }
+    public List<bool> isEnemyInLane { get; protected set; }
+
+    protected List<float> enemyPoints;
 
     [SerializeField]
     private float destroyTime = 10f;
     private float destroyCounter;
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         InvincibleCounter = 0;
         destroyCounter = destroyTime;
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         if (IsDead)
         {
@@ -91,16 +95,26 @@ public class EnemyController : MonoBehaviour
             GetComponent<SpriteRenderer>().color = new Color(1, 1, 1,1);
         }
     }
-
+    private void InitLanes()
+    {
+        enemyPoints = new List<float>();
+        for (int i = 0; i < 4; i++)
+        {
+            enemyPoints.Add(-i-heightBuff);
+        }
+    }
     public void InitEnemy(int raneId)
     {
         isEnemyInLane = new List<bool>();
+        InitLanes();
         for (int i = 0; i < 4; i++)
         {
             if (i == raneId) isEnemyInLane.Add(true);
             else isEnemyInLane.Add(false);
         }
-        BaseY = this.gameObject.transform.position.y;
+        currentLane = raneId;
+        BaseY = enemyPoints[currentLane];
+        this.gameObject.transform.position = new Vector2(this.gameObject.transform.position.x, BaseY);
         GetComponent<SpriteRenderer>().sortingOrder = raneId;
     }
 
